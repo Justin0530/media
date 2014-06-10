@@ -17,8 +17,8 @@ class MenuController extends BaseController {
 
 	public function index()
     {
-        $menuList = Menu::with('author')->orderBy('created_at', 'desc')->paginate(1);
-        return View::make('user.index',array('title' => '菜单维护','menuList'=>$menuList));
+        $menuList = Menu::with('author')->orderBy('created_at', 'desc')->paginate($this->pageSize);
+        return View::make('menu.index',array('title' => '菜单维护','menuList'=>$menuList));
     }
 
     public function add()
@@ -26,57 +26,40 @@ class MenuController extends BaseController {
 
         if(Request::getMethod()=='POST')
         {
-            $truename    = Input::get('truename');
-            $grade       = Input::get('grade');
-            $email       = Input::get('email');
-            $mobile      = Input::get('mobile');
-            $password    = Input::get('password');
-            $resignation = Input::get('resignation');
-            if(empty($email)||empty($grade)||empty($password))
-            {
-                return Redirect::to('user/add')->with('flag',true);
-            }
-            else
-            {
-                $arr = array(
-                    'truename'    => $truename,
-                    'email'       => $email,
-                    'password'    => $password,
-                    'mobile'      => $mobile,
-                    'grade_id'    => $grade,
-                    'resignation' => $resignation,
-                );
-            }
-            $rules = array(
-                'truename' => 'required',
-                'email'    => 'unique:users,email|required',
-                'password' => 'required|min:6|max:20',
-                'mobile'   => 'required',
-                'grade_id' => 'required',
-            );
+            $arr['menu']         = Input::get('menu');
+            $arr['menu_url']     = Input::get('menu_url');
+            $arr['f_parent_id']  = Input::get('f_parent_id');
+            $arr['parent_id']    = Input::get('email');
+            $arr['status']       = Input::get('status');
 
-            $v = Validator::make($arr,$rules);
-            if($v->fails())
+
+            //var_dump(Session::all());
+            //var_dump(Auth::user()->id);exit();
+            $menu = new Menu();
+            if(!$menu->validate($arr,$menu->getRules()))
             {
-                return Redirect::to('user/add')->with('user',Auth::user())->withErrors($v)->withInput();
+                $error = $menu->errors();
+                return Redirect::to('menu/add')->with('user',Auth::user())->withErrors($error)->withInput();
             }
-            $arr['password'] = Hash::make($arr['password']);
-            $user = new User();
-            $user->fill($arr);
-            $result = $user->save();
+            $arr['author_id'] = Auth::user()->id();
+            $menu = new Menu();
+            $menu->fill($arr);
+            $result = $menu->save();
             if($result)
             {
-                return Redirect::to('user/index');
+                return Redirect::to('menu/index');
             }else{
-                return Redirect::to('user/add')->with('flag',true);
+                return Redirect::to('menu/add')->with('flag',true);
             }
 
         }
-        $grade     = new Grade();
-        $gradeList = $grade->where('status','=','1')->lists('grade_name','id');
+        $menu     = new Menu();
+        $fParentList = $menu->where('status','=','1')->where('menu_grade','=','1')->lists('menu','id');
+        $parentList = $menu->where('status','=','1')->where('menu_grade','=','2')->get();
         $data['title']     = '添加用户';
-        $data['gradeList'] = $gradeList;
-        return View::make('user.add',$data);
+        $data['fParentList'] = $fParentList;
+        $data['parentList'] = $parentList;
+        return View::make('menu.add',$data);
     }
 
     public function edit($id)

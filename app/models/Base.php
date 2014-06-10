@@ -15,7 +15,7 @@ class Base extends Eloquent
         $v = Validator::make($data, $rules);
         if($v->fails())
         {
-            $this->errors = $v->errors;
+            $this->errors = $v;
             return false;
         }
         return true;

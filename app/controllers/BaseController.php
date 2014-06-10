@@ -2,7 +2,7 @@
 
 class BaseController extends Controller {
 
-
+    public $pageSize = '20';
     protected $layout = 'layout.layout';
 	/**
 	 * Setup the layout used by the controller.
@@ -20,6 +20,11 @@ class BaseController extends Controller {
 
     public function __construct()
     {
+        $pageSize = Config::get('app.pageSize');
+        if($pageSize)
+        {
+            $this->pageSize = $pageSize;
+        }
 
     }
 

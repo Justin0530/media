@@ -11,23 +11,29 @@
 |
 */
 
-Route::any('/', 'HomeController@showWelcome');
+
 Route::get('login', 'UserController@login');
 Route::post('doLogin', 'UserController@doLogin');
 Route::any('logout', 'UserController@logout');
 
 Route::group(array('before' => 'auth'), function()
 {
+    Route::any('/', 'HomeController@showWelcome');
+
     //用户中心
     Route::any('/user/index', 'UserController@index');
     Route::any('/user/add', 'UserController@add');
     Route::any('/user/edit/{id}', 'UserController@edit')->where('id', '[0-9]+');
     Route::any('/user/del/{id}', 'UserController@del');
+
     //用户级别
     Route::any('/user/grade', 'UserController@grade');
     Route::any('/user/addGrade','UserController@addGrade');
 
     //菜单维护
     Route::any('/menu/index','MenuController@index');
+    Route::any('/menu/add','MenuController@add');
+    Route::any('/menu/edit','MenuController@edit')->where('id', '[0-9]+');
+    Route::any('/menu/del/{$id}','MenuController@del');
 });
 

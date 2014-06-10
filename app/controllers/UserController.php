@@ -49,7 +49,7 @@ class UserController extends BaseController {
 
     public function index()
     {
-        $userList = User::with('grade')->orderBy('created_at', 'desc')->paginate(1);
+        $userList = User::with('grade')->orderBy('created_at', 'desc')->paginate($this->pageSize);
         return View::make('user.index',array('title' => '用户列表','userList'=>$userList));
     }
 

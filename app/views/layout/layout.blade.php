@@ -73,7 +73,7 @@
                 <li><a href="{{URL::to('/menu/index')}}">菜单维护</a></li>
             </ul>
         </li>
-        <li> <a href="widgets.html"><i class="icon icon-inbox"></i> <span>Widgets</span></a> </li>
+        <li> <a href="{{URL::to('/install/index')}}"><i class="icon icon-inbox"></i> <span>点位管理</span></a> </li>
         <li><a href="tables.html"><i class="icon icon-th"></i> <span>Tables</span></a></li>
         <li><a href="grid.html"><i class="icon icon-fullscreen"></i> <span>Full width</span></a></li>
         <li class="submenu"> <a href="#"><i class="icon icon-th-list"></i> <span>Forms</span> <span class="label label-important">3</span></a>
@@ -144,7 +144,6 @@
 <script src="/admin/js/jquery.validate.js"></script>
 <script src="/admin/js/matrix.js"></script>
 <script src="/admin/js/matrix.tables.js"></script>
-<script src="/admin/js/matrix.form_validation.js"></script>
 @show
 </body>
 </html>

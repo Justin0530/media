@@ -1,6 +1,6 @@
 <?php
 
-class MenuController extends BaseController {
+class InstallController extends BaseController {
 
 	/*
 	|--------------------------------------------------------------------------

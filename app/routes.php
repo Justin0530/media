@@ -35,5 +35,8 @@ Route::group(array('before' => 'auth'), function()
     Route::any('/menu/add','MenuController@add');
     Route::any('/menu/edit','MenuController@edit')->where('id', '[0-9]+');
     Route::any('/menu/del/{$id}','MenuController@del');
+
+    //点位管理
+    Route::any('/install/index','InstallController@index');
 });
 

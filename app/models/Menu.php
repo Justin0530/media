@@ -12,7 +12,6 @@ class Menu extends Base
     protected   $rules   = array
     (
         'menu'       => 'required|max:30',
-        'menu_url'   => 'required|max:200',
         'status'     => 'required',
     );
 
@@ -35,12 +34,17 @@ class Menu extends Base
 
     public function author()
     {
-        return $this->belongTo('User','author_id');
+        return $this->belongsTo('User','author_id');
+    }
+
+    public function menus()
+    {
+        return $this->hasMany('Menu');
     }
 
     public function parent()
     {
-        return $this->belongTo('Menu','parent_id');
+        return $this->belongsTo('Menu','parent_id');
     }
 
 

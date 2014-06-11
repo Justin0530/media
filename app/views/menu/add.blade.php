@@ -49,7 +49,12 @@
                         <label class="control-label">一级菜单</label>
 
                         <div class="controls" style="width: 267px;">
-                            {{Form::select('f_parent_id', $fParentList);}}
+                            <select id="f_parent_id" name="f_parent_id">
+                                <option value="">请选择</option>
+                                @foreach($fParentList as $key => $val)
+                                <option value="{{$key}}">{{$val}}</option>
+                                @endforeach
+                            </select>
                             {{ $errors->first('grade', '<span class="help-inline">:message</span>') }}
                         </div>
                     </div>
@@ -58,6 +63,7 @@
                         <label class="control-label">二级菜单</label>
                         <div class="controls" style="width: 267px;">
                             <select id="parent_id" name="parent_id">
+                                <option value="">请选择</option>
                                 @foreach( $parentList as $key => $val)
                                 <option value="{{$val->id}}" class="{{$val->parent_id}}">{{$val->menu}}</option>
                                 @endforeach
@@ -99,16 +105,11 @@
     $(document).ready(function(){
 
         $('input[type=checkbox],input[type=radio],input[type=file]').uniform();
-
-        $('select').select2();
-
+        $("#parent_id").chained("#f_parent_id");
         // Form Validation
         $("#addMenu").validate({
             rules:{
                 menu:{
-                    required:true
-                },
-                menu_url:{
                     required:true
                 },
                 status:{

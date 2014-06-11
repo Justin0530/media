@@ -48,9 +48,16 @@
                             <td><input type="checkbox" name="lineNum" value="{{$val->id}}"/></td>
                             <td>{{$val->menu}}</td>
                             <td>{{$val->menu_url}}</td>
-                            <td>{{$val->status}}</td>
-                            <td>{{$val->grade}}</td>
-                            <td>{{$val->parent->menu}}</td>
+                            <td>
+                                @if($val->status=="1")
+                                    {{'启用'}}
+                                @else
+                                    {{'禁用'}}
+                                @endif
+                            </td>
+                            <td>{{$val->menu_grade}}</td>
+                            <td>&nbsp;</td>
+                            <td>{{$val->author->truename}}</td>
                             <td class="center"> {{$val->created_at}}</td>
                             <td class="center"> {{$val->updated_at}}</td>
                         </tr>

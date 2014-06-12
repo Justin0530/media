@@ -29,7 +29,7 @@ class MenuController extends BaseController {
             $arr['menu']         = Input::get('menu');
             $arr['menu_url']     = Input::get('menu_url');
             $arr['f_parent_id']  = Input::get('f_parent_id');
-            $arr['parent_id']    = Input::get('email');
+            $arr['parent_id']    = Input::get('parent_id');
             $arr['status']       = Input::get('status');
 
 
@@ -56,7 +56,7 @@ class MenuController extends BaseController {
         $menu     = new Menu();
         $fParentList = $menu->where('status','=','1')->where('menu_grade','=','1')->lists('menu','id');
         $parentList = $menu->where('status','=','1')->where('menu_grade','=','2')->get();
-        $data['title']     = '添加用户';
+        $data['title']     = '添加菜单';
         $data['fParentList'] = $fParentList;
         $data['parentList'] = $parentList;
         return View::make('menu.add',$data);
@@ -64,73 +64,35 @@ class MenuController extends BaseController {
 
     public function edit($id)
     {
-        $user = User::find($id);
+        $menu = Menu::find($id);
+        $fParentList = $menu->where('status','=','1')->where('menu_grade','=','1')->lists('menu','id');
+        $parentList  = $menu->where('status','=','1')->where('menu_grade','=','2')->get();
+        $data['title']     = '编辑菜单';
+        $data['fParentList'] = $fParentList;
+        $data['parentList'] = $parentList;
         if(Request::getMethod()=='POST')
         {
-            $truename    = Input::get('truename');
-            $grade       = Input::get('grade');
-            $email       = Input::get('email');
-            $mobile      = Input::get('mobile');
-            $password    = Input::get('password');
-            $resignation = Input::get('resignation');
-            if(empty($email)||empty($grade))
+            $menu->menu         = $arr['menu'] = Input::get('menu');
+            $menu->menu_url     = Input::get('menu_url');
+            $f_parent_id        = $data['fParentList'] = Input::get('f_parent_id');
+            $menu->parent_id    = Input::get('parent_id');
+            $menu->status       = $arr['status'] = Input::get('status');
+            if($menu->validate($arr,$menu->getRules()))
             {
-                return Redirect::to('user/edit/'.$user->id)->with('flag',true);
+                $error = $menu->errors();
+                return Redirect::to('menu/edit/'.$menu->id)->with('error',$error);
             }
-            else
-            {
-                $arr = array(
-                    'truename'    => $truename,
-                    'email'       => $email,
-                    'password'    => $password,
-                    'mobile'      => $mobile,
-                    'grade_id'    => $grade,
-                    'resignation' => $resignation,
-                );
-            }
-            $rules = array(
-                'email'    => 'unique:users,email|required',
-            );
-
-            $v = Validator::make($arr,$rules);
-            if($v->fails()&&$arr['email']!=$user->email)
-            {
-                return Redirect::to('user/edit/'.$user->id)->with('user',Auth::user())->withErrors($v)->withInput();
-            }else{
-                $user->email = $email;
-            }
-            if(!empty($arr['password'])){
-                $user->password = Hash::make($arr['password']);
-            }
-
-            if(!empty($mobile))
-            {
-                $user->mobile = $mobile;
-            }
-
-            if(!empty($grade))
-            {
-                $user->grade_id = $grade;
-            }
-
-            if(!empty($resignation)||$resignation==='0')
-            {
-                $user->resignation = $resignation;
-            }
-            $result = $user->save();
+            $arr['author_id'] = Auth::user()->id();
+            $result = $menu->save();
             if($result)
             {
-                return Redirect::to('user/index');
+                return Redirect::to('menu/index');
             }else{
-                return Redirect::to('user/edit/'.$user->id)->with('flag',true);
+                return Redirect::to('menu/edit/'.$menu->id)->with('flag',true);
             }
 
         }
-        $grade             = new Grade();
-        $gradeList         = $grade->where('status','=','1')->lists('grade_name','id');
-        $data['title']     = '编辑用户';
-        $data['gradeList'] = $gradeList;
-        $data['user']      = $user;
+
         return View::make('user.edit',$data);
     }
 

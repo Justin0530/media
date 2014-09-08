@@ -66,7 +66,7 @@ class InstallController extends BaseController {
 
         $data['fParentList'] = $fParentList;
         $data['parentList'] = $parentList;
-        return View::make('menu.add',$data);
+        return View::make('install.add',$data);
     }
 
     public function edit($id)

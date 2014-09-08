@@ -14,6 +14,7 @@
     <!--    <h1>级别列表</h1>-->
 </div>
 <div class="container-fluid">
+    <hr>
     <div class="row-fluid">
         <div class="span12">
 
@@ -56,7 +57,12 @@
                                 @endif
                             </td>
                             <td>{{$val->menu_grade}}</td>
-                            <td>&nbsp;</td>
+                            <td>
+                                @if($val->parent)
+                                {{$val->parent->menu}}
+
+                                @endif
+                            </td>
                             <td>{{$val->author->truename}}</td>
                             <td class="center"> {{$val->created_at}}</td>
                             <td class="center"> {{$val->updated_at}}</td>
@@ -99,7 +105,7 @@
             });
             checks = checks.substr(0, checks.length - 1);
             if ($.trim(checks) == ''||num>1) {
-                alert("请选择一个用户");
+                alert("请选择一个菜单");
                 return false;
             } else {
                 location.href = "{{URL::to('menu/edit')}}/" + checks;
@@ -119,7 +125,7 @@
                 alert("请选择一个用户");
                 return false;
             } else {
-                if (confirm('真的删除该用户吗?')) {
+                if (confirm('真的删除该菜单吗?')) {
                     $.post("{{URL::to('menu/del')}}/" + checks,
                         function (data) {
                             if (data) {

@@ -29,14 +29,18 @@ Route::group(array('before' => 'auth'), function()
     //用户级别
     Route::any('/user/grade', 'UserController@grade');
     Route::any('/user/addGrade','UserController@addGrade');
+    Route::any('/user/editGrade/{id}','UserController@editGrade')->where('id', '[0-9]+');
+    Route::any('/user/lookGrade/{id}','UserController@lookGrade')->where('id', '[0-9]+');
+    Route::any('/user/delGrade/{id}','UserController@delGrade');
 
     //菜单维护
     Route::any('/menu/index','MenuController@index');
     Route::any('/menu/add','MenuController@add');
-    Route::any('/menu/edit','MenuController@edit')->where('id', '[0-9]+');
-    Route::any('/menu/del/{$id}','MenuController@del');
+    Route::any('/menu/edit/{id}','MenuController@edit')->where('id', '[0-9]+');
+    Route::any('/menu/del/{id}','MenuController@del');
 
     //点位管理
     Route::any('/install/index','InstallController@index');
+    Route::any('/install/add','InstallController@add');
 });
 

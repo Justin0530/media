@@ -49,7 +49,7 @@ class UserController extends BaseController {
 
     public function index()
     {
-        $userList = User::with('grade')->orderBy('created_at', 'desc')->paginate($this->pageSize);
+        $userList = User::with('grade')->orderBy('id', 'desc')->paginate($this->pageSize);
         return View::make('user.index',array('title' => '用户列表','userList'=>$userList));
     }
 
@@ -209,12 +209,129 @@ class UserController extends BaseController {
 
     public function addGrade()
     {
-        $grade = array('title' => '用户级别');
+        $data = array('title' => '添加用户级别');
+        $tree = array();
+        $grade = 3;
+        $menu = new Menu();
+        $menu_list = $menu->getMenuTree($grade,$tree);
+        $data['menu_list'] = $menu_list;
         if(Request::getMethod()=='POST')
         {
+            $grade = new Grade();
+            $arr['grade_name']  = Input::get('grade_name');
+            $arr['desc']        = Input::get('desc');
+            $arr['range']       = Input::get('range');
+            $arr['status']      = Input::get('status');
+            $arr['author_id']   = Auth::user()->id;
+            $authority          = Input::get('authority');
+            if(!$grade->validate($arr,$grade->getRules()))
+            {
+                $errors = $grade->errors();
+                return Redirect::to('user/addGrade')->with('user',Auth::user())->withErrors($errors)->withInput();
+            }
 
+            $rs = $grade->fill($arr)->save();
+            if($rs&&$arr['range']=='2')
+            {
+                foreach($authority as $key => $val)
+                {
+                    $gradeMenu = new GradeMenu();
+                    $gradeMenu->grade_id = $grade->id;
+                    $gradeMenu->menu_id  = $val;
+                    $gradeMenu->save();
+                }
+            }
+
+            return Redirect::to('grade/index');
         }
-        return View::make('user.add-grade',$grade);
+        return View::make('user.add-grade',$data);
     }
 
+    public function editGrade($grade_id)
+    {
+        $data = array('title' => '编辑用户级别');
+        $tree = array();
+        $grade = 3;
+        $menu = new Menu();
+        $menu_list = $menu->getMenuTree($grade,$tree);
+        $data['menu_list'] = $menu_list;
+        $grade = new Grade();
+        $grade_info = $grade->find($grade_id);
+        //$grade_menu = $grade_info->gradeMenu();
+        $menu_id_arr = array();
+        foreach($grade_info->gradeMenu as $key => $val)
+        {
+            array_push($menu_id_arr,$val->menu_id);
+        }
+        $data['grade_info'] = $grade_info;
+        $data['menu_id_arr'] = $menu_id_arr;
+        if(Request::getMethod()=='POST')
+        {
+            $arr['grade_name']  = Input::get('grade_name');
+            $arr['desc']        = Input::get('desc');
+            $arr['range']       = Input::get('range');
+            $arr['status']      = Input::get('status');
+            $authority          = Input::get('authority');
+            if(!$grade->validate($arr,$grade->getRules()))
+            {
+                $errors = $grade->errors();
+                return Redirect::to('user/addGrade')->with('user',Auth::user())->withErrors($errors)->withInput();
+            }
+
+            $grade_info->grade_name = $arr['grade_name'];
+            $grade_info->desc       = $arr['desc'];
+            $grade_info->status     = $arr['status'];
+            $grade_info->range      = $arr['range'];
+            $grade_info->author_id  = Auth::user()->id;
+            $rs = $grade_info->save();
+            if($rs&&$arr['range']=='2')
+            {
+                GradeMenu::where('grade_id','=',$grade_info->id)->delete();
+                foreach($authority as $key => $val)
+                {
+                    $gradeMenu = new GradeMenu();
+                    $gradeMenu->grade_id = $grade_info->id;
+                    $gradeMenu->menu_id  = $val;
+                    $gradeMenu->save();
+                }
+            }
+
+            return Redirect::to('user/grade');
+        }
+        return View::make('user.edit-grade',$data);
+    }
+
+    public function lookGrade($grade_id)
+    {
+        $data = array('title' => '查看用户级别');
+        $tree = array();
+        $grade_level = 3;
+        $menu = new Menu();
+        $menu_list = $menu->getMenuTree($grade_level,$tree);
+        $data['menu_list'] = $menu_list;
+        $grade = new Grade();
+        $grade_info = $grade->find($grade_id);
+        $menu_id_arr = array();
+        foreach($grade_info->gradeMenu as $key => $val)
+        {
+            array_push($menu_id_arr,$val->menu_id);
+        }
+        $data['grade_info'] = $grade_info;
+        $data['menu_id_arr'] = $menu_id_arr;
+        return View::make('user.look-grade',$data);
+    }
+
+    public function delGrade($ids)
+    {
+        $idArr = explode(',',$ids);
+        $grade = new Grade();
+        $gradeMenu = new GradeMenu();
+        foreach($idArr as $key => $val)
+        {
+            $grade->where('id','=',$val)->delete();
+            $gradeMenu->where('grade_id','=',$val)->delete();
+        }
+        echo 'success';
+        exit();
+    }
 }

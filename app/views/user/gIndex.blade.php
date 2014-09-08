@@ -2,12 +2,6 @@
 
 @section('content')
 
-<!--breadcrumbs-->
-<div id="content-header">
-    <div id="breadcrumb"><a href="index.html" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> 控制面板</a>
-    </div>
-</div>
-<!--End-breadcrumbs-->
 <div id="content-header">
     <div id="breadcrumb"><a href="index.html" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> 控制面板</a>
         <a href="#" class="tip-bottom">系统管理</a> <a href="#" class="current">级别管理</a></div>
@@ -32,6 +26,7 @@
                             <th><i class="icon-resize-vertical"></i></th>
                             <th>级别</th>
                             <th>描述</th>
+                            <th>权限类型</th>
                             <th>状态</th>
                             <th>编辑者</th>
                             <th>编辑时间</th>
@@ -44,7 +39,20 @@
                             <td><input type="checkbox" name="lineNum" value="{{$val->id}}" style="opacity: 1;"/></td>
                             <td>{{$val->grade_name}}</td>
                             <td>{{$val->desc}}</td>
-                            <td>{{$val->status}}</td>
+                            <td>
+                                @if($val->range=='1')
+                                {{'全部'}}
+                                @else
+                                {{'部分'}}
+                                @endif
+                            </td>
+                            <td>
+                                @if($val->status=='1')
+                                {{'启用'}}
+                                @else
+                                {{禁用}}
+                                @endif
+                            </td>
                             <td class="center"> {{$val->author->truename}}</td>
                             <td class="center"> {{$val->updated_at}}</td>
                         </tr>
@@ -55,9 +63,10 @@
                 </div>
             </div>
             <p style="float: right;">
-                <button id="add" class="btn btn-success"><i class="icon-plus"></i></i>  增加</button>
-                <button id="edit" class="btn btn-success"><i class="icon-edit"></i></i>  编辑</button>
-                <button id="del" class="btn btn-success"><i class="icon-remove-circle"></i></i>  删除</button>
+                <button id="add" class="btn btn-success"><i class="icon-plus"></i>  增加</button>
+                <button id="edit" class="btn btn-success"><i class="icon-edit"></i>  编辑</button>
+                <button id="look" class="btn btn-success"><i class="icon-eye-open"></i>  查看</button>
+                <button id="del" class="btn btn-success"><i class="icon-remove-circle"></i>  删除</button>
             </p>
 
         </div>
@@ -73,58 +82,46 @@
         });
 
         $(":button[id='edit']").click(function () {
-            alert('asdf');
             var checks = "";
-            $(":checkbox[name='lineNum[]']").each(function () {
+            var num = 0;
+            $(":checkbox[name='lineNum']").each(function () {
                 if ($(this).prop("checked")) {
                     checks += $(this).val() + ",";
+                    num  =  num + 1;
                 }
             });
             checks = checks.substr(0, checks.length - 1);
-            alert('====');
-            if ($.trim(checks) == '') {
-                alert("请选择一个品牌");
-
+            alert(checks);
+            if ($.trim(checks) == ''||num > 1) {
+                alert("请选择一个级别");
                 return false;
             } else {
-                location.href = "/admin/brand/edit?id=" + checks;
+                location.href = "{{URL::to('user/editGrade');}}/" + checks;
             }
         });
 
-        $(":button[id='lock']").click(function () {
+        $(":button[id='look']").click(function () {
             var checks = "";
-            $(":checkbox[name='lineNum[]']").each(function () {
+            var num = 0;
+            $(":checkbox[name='lineNum']").each(function () {
                 if ($(this).prop("checked")) {
                     checks += $(this).val() + ",";
+                    num  =  num + 1;
                 }
             });
             checks = checks.substr(0, checks.length - 1);
-
-            if ($.trim(checks) == '') {
-                //alert("请选择一个品牌");
-                $(".alert").fadeToggle("slow", "linear");
+            alert(checks);
+            if ($.trim(checks) == ''||num > 1) {
+                alert("请选择一个级别");
                 return false;
             } else {
-                //$(".alert").fadeToggle("slow","linear");
-                //alert("/admin/admin/del?ids="+checks);
-                if (confirm('真的要锁定?')) {
-                    $.post("/admin/brand/lock?ids=" + checks,
-                        function (data) {
-                            if (data) {
-                                alert('锁定成功！');
-                            } else {
-                                alert('锁定失败！');
-                            }
-                            parent.location.reload();
-                        }
-                    );
-                }
+                location.href = "{{URL::to('user/lookGrade');}}/" + checks;
             }
         });
 
-        $(":button[id='unlock']").click(function () {
+        $(":button[id='del']").click(function () {
             var checks = "";
-            $(":checkbox[name='lineNum[]']").each(function () {
+            $(":checkbox[name='lineNum']").each(function () {
                 if ($(this).prop("checked")) {
                     checks += $(this).val() + ",";
                 }
@@ -132,19 +129,16 @@
             checks = checks.substr(0, checks.length - 1);
 
             if ($.trim(checks) == '') {
-                //alert("请选择一个品牌");
-                $(".alert").fadeToggle("slow", "linear");
+                alert("请选择一个或多个级别");
                 return false;
             } else {
-                //$(".alert").fadeToggle("slow","linear");
-                //alert("/admin/admin/del?ids="+checks);
-                if (confirm('真的要启用?')) {
-                    $.post("/admin/brand/unlock?ids=" + checks,
+                if (confirm('您真的要删除吗?')) {
+                    $.post("{{URL::to('user/delGrade')}}/" + checks,
                         function (data) {
                             if (data) {
-                                alert('启用成功！');
+                                alert('删除成功！');
                             } else {
-                                alert('启用失败！');
+                                alert('删除失败！');
                             }
                             parent.location.reload();
                         }

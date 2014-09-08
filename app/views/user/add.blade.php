@@ -2,11 +2,6 @@
 
 @section('content')
 
-<!--breadcrumbs-->
-<div id="content-header">
-    <div id="breadcrumb"><a href="{{URL::to('/')}}" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> 控制面板</a>
-    </div>
-</div>
 <!--End-breadcrumbs-->
 <div id="content-header">
     <div id="breadcrumb"><a href="{{URL::to('/')}}" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> 控制面板</a>

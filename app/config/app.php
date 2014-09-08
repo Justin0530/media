@@ -15,7 +15,7 @@ return array(
 
 	'debug' => true,
 
-    'pageSize' => 1,
+    'pageSize' => 20,
 	/*
 	|--------------------------------------------------------------------------
 	| Application URL

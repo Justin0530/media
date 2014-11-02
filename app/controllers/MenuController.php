@@ -17,8 +17,38 @@ class MenuController extends BaseController {
 
 	public function index()
     {
-        $menuList = Menu::with('author')->orderBy('menu_grade', 'asc')->paginate($this->pageSize);
-        return View::make('menu.index',array('title' => '菜单维护','menuList'=>$menuList));
+        $data['title'] = '菜单维护';
+        $grade = Input::get('grade','');
+        $parent_id = Input::get('parent_id','');
+        $status = Input::get('status','');
+        $keyword = Input::get('keyword','');
+        $menuObj = Menu::with('author');
+        $data['grade'] = $grade;
+        $data['status'] = $status;
+        $data['keyword'] = $keyword;
+        $data['parent_id'] = $parent_id;
+        if($grade)
+        {
+            $menuObj->where('menu_grade','=',$grade);
+        }
+        if($keyword)
+        {
+            $menuObj->where('menu','like','%'.$keyword.'%');
+        }
+        if($status)
+        {
+            $menuObj->where('status','=',$status);
+        }
+        if($parent_id)
+        {
+            $menuObj->where('parent_id','=',$parent_id);
+        }
+        $menuList = $menuObj->orderBy('menu_grade', 'asc')->paginate($this->pageSize);
+        $firstMenuList = Menu::select(['id','menu'])->where('status','=','1')->where('menu_grade','=','1')
+            ->get()->lists('menu','id');
+        $data['menuList'] = $menuList;
+        $data['firstMenuList'] = $firstMenuList;
+        return View::make('menu.index',$data);
     }
 
     public function add()
@@ -30,18 +60,24 @@ class MenuController extends BaseController {
             $arr['menu_url']     = Input::get('menu_url');
             $arr['parent_id']    = Input::get('parent_id');
             $arr['status']       = Input::get('status');
-            list($arr['menu_grade'],$arr['parent_id']) = explode('-',$arr['parent_id']);
+            if($arr['parent_id'])
+            {
+                list($arr['menu_grade'],$arr['parent_id']) = explode('-',$arr['parent_id']);
+            }
+            else
+            {
+                $arr['menu_grade'] = 0;
+            }
+
             $arr['menu_grade'] = $arr['menu_grade'] + 1;
 
             $menu = new Menu();
-            $menu_grade = '1';
             if(!$menu->validate($arr,$menu->getRules()))
             {
                 $error = $menu->errors();
                 return Redirect::to('menu/add')->with('user',Auth::user())->withErrors($error)->withInput();
             }
 
-            $arr['menu_grade'] = $menu_grade;
             $arr['author_id'] = Auth::user()->id;
             $menu->fill($arr);
             $result = $menu->save();
@@ -54,7 +90,7 @@ class MenuController extends BaseController {
 
         }
         $menu     = new Menu();
-        $grade = 2;
+        $grade = 1;
         $tree = $menu->getMenuTree($grade,array());
         $data['title']     = '添加菜单';
         $data['tree'] = $tree;
@@ -65,8 +101,8 @@ class MenuController extends BaseController {
     {
         $object = new Menu();
         $menu = Menu::find($id);
-        $grade = 2;
-        $tree = $object->getMenuTree($grade,array());
+        $grade = $menu->grade;
+        $tree = $object->getMenuTree(1,array());
         $data['tree'] = $tree;
         if(Request::getMethod()=='POST')
         {
@@ -80,8 +116,17 @@ class MenuController extends BaseController {
                 $error = $menu->errors();
                 return Redirect::to('menu/edit')->with('user',Auth::user())->withErrors($error)->withInput();
             }
-            list($menu->menu_grade,$menu->parent_id) = explode('-',$arr['parent_id']);
-            $menu->menu_grade = $menu->menu_grade + 1;
+
+            if($arr['parent_id'])
+            {
+                list($menu->menu_grade,$menu->parent_id) = explode('-',$arr['parent_id']);
+                $menu->menu_grade = 2;
+            }
+            else
+            {
+                $menu->menu_grade = 1;
+            }
+
             $menu->author_id = Auth::user()->id;
             $result = $menu->save();
             if($result)

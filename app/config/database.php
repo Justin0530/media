@@ -54,11 +54,12 @@ return array(
 
 		'mysql' => array(
 			'driver'    => 'mysql',
-			'host'      => 'localhost',
+			'host'      => '221.123.168.34',
 			'database'  => 'media',
 			'username'  => 'root',
-			'password'  => 'lishen521',
+			'password'  => '^TFCVBNhy6',
 			'charset'   => 'utf8',
+            'port'      => '3306',
 			'collation' => 'utf8_unicode_ci',
 			'prefix'    => 'me_',
 		),

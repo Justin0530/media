@@ -67,6 +67,14 @@ App::down(function()
 	return Response::make("Be right back!", 503);
 });
 
+
+DB::listen(function($sql, $bindings, $time)
+{
+    $sql = str_replace('?','%s',$sql);
+    $sql = vsprintf($sql, $bindings);
+    Log::info($sql.' time:'.$time);
+});
+
 /*
 |--------------------------------------------------------------------------
 | Require The Filters File
@@ -77,5 +85,27 @@ App::down(function()
 | definitions instead of putting them all in the main routes file.
 |
 */
-
 require app_path().'/filters.php';
+
+/*
+|--------------------------------------------------------------------------
+| Require 视图助手
+|--------------------------------------------------------------------------
+|
+| 视图助手，帮助数据呈现
+|
+|
+*/
+require app_path().'/views/helper.php';
+
+
+/*
+|--------------------------------------------------------------------------
+| Require 定义系统常量
+|--------------------------------------------------------------------------
+|
+|
+|
+|
+*/
+require app_path().'/keys.php';

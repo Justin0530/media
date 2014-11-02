@@ -9,6 +9,14 @@ class KindergartenContact extends Base {
 	 */
 	protected $table = 'kindergarten_contact';
     protected $guarded = array('created_at','updated_at','deleted_at');
+    protected $fillable = array(
+        'id',
+        'kid',
+        'contact_type',
+        'contact_name',
+        'mobile',
+        'qq',
+    );
     protected $softDelete = true;
     protected $rules = array
     (

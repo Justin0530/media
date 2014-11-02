@@ -24,11 +24,12 @@ $app = new Illuminate\Foundation\Application;
 |
 */
 
-$env = $app->detectEnvironment(array(
-
-	'local' => array('media.loc'),
-
-));
+$env = $app->detectEnvironment(function(){
+    if(isset($_SERVER['APP_ENV'])&&$_SERVER['APP_ENV'])
+    {
+        return $_SERVER['APP_ENV'];
+    }
+});
 
 /*
 |--------------------------------------------------------------------------

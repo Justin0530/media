@@ -42,7 +42,7 @@
                             <td>{{$val->truename}}</td>
                             <td>{{$val->email}}</td>
                             <td>{{$val->mobile}}</td>
-                            <td>{{$val->grade->grade_name}}</td>
+                            <td>{{$val->grade?$val->grade->grade_name:'--'}}</td>
                             <td class="center"> {{$val->created_at}}</td>
                             <td class="center"> {{$val->updated_at}}</td>
                         </tr>

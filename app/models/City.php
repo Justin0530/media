@@ -1,32 +1,32 @@
 <?php
 
-class City extends Base {
+class City extends Eloquent
+{
+    protected $fillable = [];
+    protected $table = 'city';
 
-	/**
-	 * The database table used by the model.
-	 *
-	 * @var string
-	 */
-	protected $table = 'city';
-    protected $guarded = array('created_at','updated_at');
-    protected $rules = array
-    (
-        'city_name'=>'required',
-    );
 
-    /**
-     * @param array $rules
-     */
-    public function setRules($rules)
-    {
-        $this->rules = $rules;
-    }
+    public static $admin_config = [
+        'title'             => '城市',
+        'description'       => '城市',
+        'router'            => '/city',
+        'next_router'       => '/area',
+        'router_controller' => 'CityController',
+        'items'             => [
+            'id'           => [
+                'title'    => '编号',
+                'type'     => 'string',
+                'validator'=> '',
+                'attribute'=> FORM_TYPE_ATTRIBUTE_LIST,
+            ],
+            'city_name'     => [
+                'title'     => '城市',
+                'type'      => 'string',
+                'validator' => 'required',
+                'attribute' => '',
+            ],
+        ],
+    ];
 
-    /**
-     * @return array
-     */
-    public function getRules()
-    {
-        return $this->rules;
-    }
+
 }

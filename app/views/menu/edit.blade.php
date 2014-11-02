@@ -5,13 +5,9 @@
 <!--breadcrumbs-->
 <div id="content-header">
     <div id="breadcrumb"><a href="{{URL::to('/')}}" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> 控制面板</a>
-    </div>
-</div>
-<!--End-breadcrumbs-->
-<div id="content-header">
-    <div id="breadcrumb"><a href="{{URL::to('/')}}" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> 控制面板</a>
         <a href="/" class="tip-bottom">系统管理</a> <a href="#" class="current">菜单维护</a></div>
 </div>
+<!--End-breadcrumbs-->
 <div class="container-fluid">
     <hr>
     <div class="row-fluid">
@@ -50,6 +46,7 @@
 
                         <div class="controls" style="width: 267px;">
                             <select id="parent_id" name="parent_id">
+                                <option value="">请选择</option>
                                 @foreach($tree as $key => $val)
                                 <option value="{{$val['menu_grade'].'-'.$val['id']}}"><stroage>{{$val['menu']}}</stroage></option>
                                 @if(isset($val['sub'])&&is_array($val['sub']))

@@ -44,6 +44,7 @@
 
                         <div class="controls" style="width: 267px;">
                             <select id="parent_id" name="parent_id">
+                                <option value="">请选择</option>
                                 @foreach($tree as $key => $val)
                                 <option value="{{$val['menu_grade'].'-'.$val['id']}}"><stroage>{{$val['menu']}}</stroage></option>
                                 @if(isset($val['sub'])&&is_array($val['sub']))

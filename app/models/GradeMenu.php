@@ -20,6 +20,7 @@ class GradeMenu extends Base {
     {
         return $this->belongsTo('Grade','grade_id');
     }
+
 	public function menu()
     {
         return $this->belongsTo('Menu','menu_id');

@@ -5,15 +5,26 @@
 <!--breadcrumbs-->
 <div id="content-header">
     <div id="breadcrumb"><a href="index.html" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> 控制面板</a>
-    </div>
-</div>
-<!--End-breadcrumbs-->
-<div id="content-header">
-    <div id="breadcrumb"><a href="index.html" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> 控制面板</a>
         <a href="#" class="tip-bottom">系统管理</a> <a href="#" class="current">菜单维护</a></div>
     <!--    <h1>级别列表</h1>-->
 </div>
+<!--End-breadcrumbs-->
+<br>
+{{Form::open(array('url' => '/menu/index','method'=>'post'))}}
+
+            <span class="span" style="margin-left: 20px;margin-right: 15px;">{{Form::text('keyword',$keyword,array('id'=>'keyword','placeholder'=>'关键字'))}}</span>
+            <span class="span" style="margin-left: 10px;">{{Form::select('parent_id',array('0'=>'请选择父菜单')+$firstMenuList,$parent_id,array('id'=>'parent_id','placeholder'=>'父级菜单名称'))}}</span>
+            <?php $gradeList = array('0'=>'请选择级别','1'=>'一级','2'=>'二级'); ?>
+            <span class="span" style="margin-left: 10px;min-width:150px;">{{Form::select('grade',$gradeList,$grade,array('id'=>'grade','placeholder'=>'菜单级别'))}}
+            </span>
+            <?php $statusList = array(''=>'请选择状态','1'=>'启用','0'=>'禁用'); ?>
+            <span class="span" style="margin-left: 10px;min-width:150px;">{{Form::select('status',$statusList,$status,array('id'=>'status','placeholder'=>'菜单状态'))}}
+            </span>
+            <span class="span" style="margin-left: 10px;min-width:150px;"><input type="submit" value="查询" class="btn btn-success"></span>
+
+    {{Form::close()}}
 <div class="container-fluid">
+
     <hr>
     <div class="row-fluid">
         <div class="span12">

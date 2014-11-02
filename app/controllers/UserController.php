@@ -23,7 +23,7 @@ class UserController extends BaseController {
         $password = Hash::make('secret');
         if (Auth::check())
         {
-            return Redirect::to('/');
+            return Redirect::intended();
         }else{
             return View::make('user.login',array('loginStatus'=>''));
         }
@@ -44,6 +44,7 @@ class UserController extends BaseController {
     public function logout()
     {
         Auth::logout();
+        Session::flush();
         return Redirect::to('login');
     }
 
@@ -64,6 +65,8 @@ class UserController extends BaseController {
             $mobile      = Input::get('mobile');
             $password    = Input::get('password');
             $resignation = Input::get('resignation');
+            $province_id = Input::get('province_id','');
+            $city_id     = Input::get('city_id','');
             if(empty($email)||empty($grade)||empty($password))
             {
                 return Redirect::to('user/add')->with('flag',true);
@@ -76,6 +79,8 @@ class UserController extends BaseController {
                     'password'    => $password,
                     'mobile'      => $mobile,
                     'grade_id'    => $grade,
+                    'province_id' => $province_id,
+                    'city_id'     => $city_id,
                     'resignation' => $resignation,
                 );
             }
@@ -106,6 +111,8 @@ class UserController extends BaseController {
         }
         $grade     = new Grade();
         $gradeList = $grade->where('status','=','1')->lists('grade_name','id');
+        $data['provinceList'] = Province::select(['id','province'])->get()->lists('province','id');
+        $data['cityList'] = City::select(['id','city_name'])->get()->lists('city_name','id');
         $data['title']     = '添加用户';
         $data['gradeList'] = $gradeList;
         return View::make('user.add',$data);
@@ -287,13 +294,17 @@ class UserController extends BaseController {
             if($rs&&$arr['range']=='2')
             {
                 GradeMenu::where('grade_id','=',$grade_info->id)->delete();
-                foreach($authority as $key => $val)
+                if(count($authority))
                 {
-                    $gradeMenu = new GradeMenu();
-                    $gradeMenu->grade_id = $grade_info->id;
-                    $gradeMenu->menu_id  = $val;
-                    $gradeMenu->save();
+                    foreach($authority as $key => $val)
+                    {
+                        $gradeMenu = new GradeMenu();
+                        $gradeMenu->grade_id = $grade_info->id;
+                        $gradeMenu->menu_id  = $val;
+                        $gradeMenu->save();
+                    }
                 }
+
             }
 
             return Redirect::to('user/grade');

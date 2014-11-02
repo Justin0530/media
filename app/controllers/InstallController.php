@@ -17,162 +17,210 @@ class InstallController extends BaseController {
 
 	public function index()
     {
-        $menuList = Menu::with('author')->orderBy('created_at', 'desc')->paginate($this->pageSize);
-        return View::make('menu.index',array('title' => '菜单维护','menuList'=>$menuList));
+        //$menuList = Menu::with('author')->orderBy('created_at', 'desc')->paginate($this->pageSize);
+        $sql = '1=1';
+        $sqlArr = array();
+        $name = Input::get('name','');
+        $type = Input::get('type','');
+        $province_id = Input::get('province_id','');
+        $city_id = Input::get('city_id','');
+        $area_id = Input::get('area_id','');
+        $grade_id = Input::get('grade_id');
+        if($name)
+        {
+            $sql .= " and name like '%$name%'";
+        }
+        if($type)
+        {
+            $sql .= " and type = '$type'";
+        }
+        if($province_id)
+        {
+            $sql .= " and province_id = '$province_id'";
+        }
+        if($city_id)
+        {
+            $sql .= " and city_id = '$city_id'";
+        }
+        if($city_id)
+        {
+            $sql .= " and area_id = '$area_id'";
+        }
+        if($grade_id)
+        {
+            $sql .= " and grade_id = '$grade_id'";
+        }
+
+        $kindergarten = Kindergarten::whereRaw($sql)->orderBy('created_at', 'desc')->paginate($this->pageSize);
+        $data = array('title' => '点位管理','kList'=>$kindergarten);
+        $data['name'] = $name;
+        $data['type'] = $type;
+        $data['province_id'] = $province_id;
+        $data['city_id'] = $city_id;
+        $data['area_id'] = $area_id;
+        $data['grade_id'] = $grade_id;
+        $kindergartenGradeList = KindergartenGrade::lists('kindergarten_grade','id');
+        $provinceList = Province::orderBy('id')->lists('province','id');
+        $cityList = City::orderBy('id')->lists('city_name','id');
+        $areaList = Area::orderBy('id')->lists('area','id');
+        $data['kindergartenGradeList'] = $kindergartenGradeList;
+        $data['provinceList'] = $provinceList;
+        $data['cityList'] = $cityList;
+        $data['areaList'] = $areaList;
+        return View::make('install.index',$data);
     }
 
+    protected  function generateKID()
+    {
+        return Kindergarten::max('id')+1;
+    }
     public function add()
     {
-
+        $step = Input::get('step','1');
+        $id   = $kid = $cid = $eid = $mid = '';
+        $id   = Input::get('id','');
+        $kid  = Input::get('kid','');
+        $eid  = Input::get('eid','');
+        $mid  = Input::get('mid','');
         if(Request::getMethod()=='POST')
         {
-            $arr['menu']         = Input::get('menu');
-            $arr['menu_url']     = Input::get('menu_url');
-            $fParentId           = Input::get('f_parent_id');
-            $arr['parent_id']    = Input::get('parent_id');
-            $arr['status']       = Input::get('status');
 
-            $menu = new Menu();
-            $menu_grade = '1';
-            if(!$menu->validate($arr,$menu->getRules()))
-            {
-                $error = $menu->errors();
-                return Redirect::to('menu/add')->with('user',Auth::user())->withErrors($error)->withInput();
-            }
-            if($fParentId && $arr['parent_id'])
-            {
-                $menu_grade = '3';
-            }
-            elseif($fParentId && !$arr['parent_id'])
-            {
-                $menu_grade = '2';
-            }
-            $arr['menu_grade'] = $menu_grade;
+            $arr  = Input::all();
             $arr['author_id'] = Auth::user()->id;
-            $menu->fill($arr);
-            $result = $menu->save();
-            if($result)
+            $rs   = '';
+            if($step=="1")
             {
-                return Redirect::to('menu/index');
-            }else{
-                return Redirect::to('menu/add')->with('flag',true);
+                if($id)
+                {
+                    $kid = $id;
+                    $rs = Kindergarten::find($id)->update($arr);
+                }else{
+                    $arr['id'] = $this->generateKID();
+                    $kid = $arr['id'];
+                    $rs = Kindergarten::create($arr);
+                }
             }
 
-        }
-        $menu     = new Menu();
-        $fParentList = $menu->where('status','=','1')->where('menu_grade','=','1')->lists('menu','id');
-        $parentList = $menu->where('status','=','1')->where('menu_grade','=','2')->get();
-        $data['title']     = '添加用户';
+            if(!$kid)
+            {
+                $data['flag'] = 'error';
+            }else{
+                $arr['kid'] = $kid;
+                if($step=="2")
+                {
+                    $kindergartenContact = new KindergartenContact();
+                    $kindergartenContact->where('kid','=',$kid)->delete();
+                    $contact_name_arr = Input::get('contact_name');
+                    $qq_arr = Input::get('qq');
+                    $mobile_arr = Input::get('mobile');
+                    foreach($contact_name_arr as $key => $val)
+                    {
+                        $arr['type'] = $key + 1;
+                        $arr['contact_name'] = $contact_name_arr[$key];
+                        $arr['qq'] = $qq_arr[$key];
+                        $arr['mobile'] = $mobile_arr[$key];
+                        $rs = KindergartenContact::create($arr);
+                        $arr['type'] = $arr['contact_name'] = $arr['qq'] = $arr['mobile'] = '';
+                    }
+                }
+            }
 
-        $data['fParentList'] = $fParentList;
-        $data['parentList'] = $parentList;
+            return Redirect::to('/install/add?id='.$kid.'&step='.$step);
+        }
+        $kindergartenGradeList = KindergartenGrade::lists('kindergarten_grade','id');
+
+        $provinceList = Province::orderBy('id')->lists('province','id');
+        $cityList = City::orderBy('id')->lists('city_name','id');
+        $areaList = Area::orderBy('id')->lists('area','id');
+
+
+        $assessmentList = Assessment::lists('assessment','id');
+        $mediaAttrList = MediaAttr::lists('media_attr','id');
+
+        $data['title']     = '添加点位';
+        $data['step']      = $step;
+        $data['assessmentList'] = $assessmentList;
+        $data['kindergartenGradeList'] = $kindergartenGradeList;
+        $data['mediaAttrList'] = $mediaAttrList;
+        $data['provinceList'] = $provinceList;
+        $data['cityList'] = $cityList;
+        $data['areaList'] = $areaList;
+        $data['position'] = Position::lists('position_name','id');
+        $data['equipment_status_list'] = array(
+            ''  => '请选择',
+            '1' => '未安装',
+            '2' => '已完工',
+            '3' => '需维护',
+            '4' => '拆卸',
+        );
+        //初始化对象
+        $kindergarten = Kindergarten::find($id);
+        $data['kindergarten']  = $kindergarten;
+        $data['act'] = Input::get('act','');
         return View::make('install.add',$data);
     }
 
-    public function edit($id)
+    /**
+     * @todo 渠道维护
+     * @author Justin.Bj@msn.com
+     * @since $id
+     * @return mixed
+     */
+    public function maintain()
     {
-        $user = User::find($id);
+        $data['kid'] = Input::get('kid','');
+        $arr = Input::all();
+        $data['maintain_person'] = Auth::user()->truename;
         if(Request::getMethod()=='POST')
         {
-            $truename    = Input::get('truename');
-            $grade       = Input::get('grade');
-            $email       = Input::get('email');
-            $mobile      = Input::get('mobile');
-            $password    = Input::get('password');
-            $resignation = Input::get('resignation');
-            if(empty($email)||empty($grade))
+            $arr['maintain_time'] = date('Y-m-d',time());
+            $arr['next_maintain_time'] = date('Y-m-d',time()+ 20 * 24 * 3600);
+            $rs = Maintain::create($arr);
+            if($rs)
             {
-                return Redirect::to('user/edit/'.$user->id)->with('flag',true);
-            }
-            else
-            {
-                $arr = array(
-                    'truename'    => $truename,
-                    'email'       => $email,
-                    'password'    => $password,
-                    'mobile'      => $mobile,
-                    'grade_id'    => $grade,
-                    'resignation' => $resignation,
-                );
-            }
-            $rules = array(
-                'email'    => 'unique:users,email|required',
-            );
-
-            $v = Validator::make($arr,$rules);
-            if($v->fails()&&$arr['email']!=$user->email)
-            {
-                return Redirect::to('user/edit/'.$user->id)->with('user',Auth::user())->withErrors($v)->withInput();
-            }else{
-                $user->email = $email;
-            }
-            if(!empty($arr['password'])){
-                $user->password = Hash::make($arr['password']);
-            }
-
-            if(!empty($mobile))
-            {
-                $user->mobile = $mobile;
-            }
-
-            if(!empty($grade))
-            {
-                $user->grade_id = $grade;
-            }
-
-            if(!empty($resignation)||$resignation==='0')
-            {
-                $user->resignation = $resignation;
-            }
-            $result = $user->save();
-            if($result)
-            {
-                return Redirect::to('user/index');
-            }else{
-                return Redirect::to('user/edit/'.$user->id)->with('flag',true);
+                return Redirect::to('/install/maintainList');
             }
 
         }
-        $grade             = new Grade();
-        $gradeList         = $grade->where('status','=','1')->lists('grade_name','id');
-        $data['title']     = '编辑用户';
-        $data['gradeList'] = $gradeList;
-        $data['user']      = $user;
-        return View::make('user.edit',$data);
+        return View::make('install.add-maintain',$data);
     }
 
-    public function del($ids)
+    public function maintainList()
     {
-        $idArr = explode(',',$ids);
-        $user = new User();
-        foreach($idArr as $key => $val)
+        $sql = ' 1=1 ';
+        $kid = Input::get('kid','');
+        if($kid)
         {
-            $user->where('id','=',$val)->delete();
+            $sql .= " and kid='$kid'";
         }
-        echo 'success';
-        exit();
-    }
-    public function grade()
-    {
-        $gradeList = Grade::all();
-        $grade = array
-        (
-            'title' => '用户级别列表',
-            'gradeList'  => $gradeList,
-        );
-
-
-        return View::make('user.gIndex',$grade);
+        $maintainList = Maintain::whereRaw($sql)->orderBy('created_at', 'desc')->paginate($this->pageSize);
+        $data = array('title' => '点位管理','maintainList'=>$maintainList,'kid'=>$kid);
+        return View::make('install.maintainList',$data);
     }
 
-    public function addGrade()
+    public function show($id)
     {
-        $grade = array('title' => '用户级别');
-        if(Request::getMethod()=='POST')
-        {
+        $kindergartenGradeList = KindergartenGrade::lists('kindergarten_grade','id');
+        $provinceList = Province::orderBy('id')->lists('province','id');
+        $cityList = City::orderBy('id')->lists('city_name','id');
+        $areaList = Area::orderBy('id')->lists('area','id');
+        $assessmentList = Assessment::lists('assessment','id');
+        $mediaAttrList = MediaAttr::lists('media_attr','id');
 
-        }
-        return View::make('user.add-grade',$grade);
+        $data['title']     = '添加点位';
+        $data['assessmentList'] = $assessmentList;
+        $data['kindergartenGradeList'] = $kindergartenGradeList;
+        $data['mediaAttrList'] = $mediaAttrList;
+        $data['provinceList'] = $provinceList;
+        $data['cityList'] = $cityList;
+        $data['areaList'] = $areaList;
+        $data['position'] = Position::lists('position_name','id');
+        $data['equipment_status_list'] = config::get('custom.EQUIPMENT_STATUS_LIST');
+        //初始化对象
+        $kindergarten = Kindergarten::find($id);
+        $data['kindergarten']  = $kindergarten;
+        $data['act'] = Input::get('act','');
+        return View::make('install.show',$data);
     }
 
 }

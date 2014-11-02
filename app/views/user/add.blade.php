@@ -59,6 +59,15 @@
                     </div>
 
                     <div class="control-group">
+                        <label class="control-label">管理区域</label>
+
+                        <div class="controls">
+                            <span class="span2">{{Form::select('province_id',array('0'=>'请选择省')+$provinceList,'',array('id'=>'province_id','placeholder'=>'省/直辖市','onclick'=>'regionalData(this,"city_id","City")'))}}</span>
+                            <span class="span2">{{Form::select('city_id',array('0'=>'请选择城市')+$cityList,'',array('id'=>'city_id','placeholder'=>'城市','onclick'=>'regionalData(this,"area_id","Area")'))}}</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
                         <label class="control-label">密码</label>
 
                         <div class="controls">

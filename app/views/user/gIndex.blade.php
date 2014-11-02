@@ -91,7 +91,6 @@
                 }
             });
             checks = checks.substr(0, checks.length - 1);
-            alert(checks);
             if ($.trim(checks) == ''||num > 1) {
                 alert("请选择一个级别");
                 return false;

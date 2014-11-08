@@ -138,7 +138,7 @@ $(document).ready(function(){
 		
 		if ($('#lightbox').length > 0) {
 			
-			$('#imgbox').html('<img src="' + image_href + '" /><p><i class="icon-remove icon-white"></i></p>');
+			$('#imgbox').html('<img style="max-width:600px;" src="' + image_href + '" /><p><i class="icon-remove icon-white"></i></p>');
 		   	
 			$('#lightbox').slideDown(500);
 		}
@@ -146,7 +146,7 @@ $(document).ready(function(){
 		else { 
 			var lightbox = 
 			'<div id="lightbox" style="display:none;">' +
-				'<div id="imgbox"><img src="' + image_href +'" />' + 
+				'<div id="imgbox"><img style="max-width:500px;" src="' + image_href +'" />' +
 					'<p><i class="icon-remove icon-white"></i></p>' +
 				'</div>' +	
 			'</div>';

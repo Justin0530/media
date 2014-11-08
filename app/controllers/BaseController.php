@@ -3,6 +3,7 @@
 class BaseController extends Controller {
 
     public $pageSize = '20';
+    public $picturePageSize = 60;
     protected $layout = 'layout.layout';
 	/**
 	 * Setup the layout used by the controller.
@@ -20,13 +21,15 @@ class BaseController extends Controller {
 
     public function __construct()
     {
-        $pageSize = Config::get('app.pageSize');
+        $pageSize = Config::get('app.page_size');
+        $picturPageSize = Config::get('app.picture_page_size');
         $menu = Session::get('menu');
         if(!$menu)  $this->common();
         if($pageSize)
         {
             $this->pageSize = $pageSize;
         }
+        if($picturPageSize) $this->picturePageSize = $picturPageSize;
         $urlArr = Request::segments();
         $uri = current($urlArr);
 

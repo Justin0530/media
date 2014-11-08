@@ -70,6 +70,7 @@ App::down(function()
 
 DB::listen(function($sql, $bindings, $time)
 {
+    echo $sql;exit();
     $sql = str_replace('?','%s',$sql);
     $sql = vsprintf($sql, $bindings);
     Log::info($sql.' time:'.$time);

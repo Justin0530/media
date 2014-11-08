@@ -13,9 +13,11 @@ return array(
 	|
 	*/
 
-	'debug' => false,
+	'debug' => true,
 
-    'pageSize' => 20,
+    'page_size' => 20,
+
+    'picture_page_size' => 60,
 	/*
 	|--------------------------------------------------------------------------
 	| Application URL

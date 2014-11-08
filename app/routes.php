@@ -67,9 +67,9 @@ Route::group(array('before' => 'auth'), function()
     //媒体管理
     Route::any('/media/add','MediaController@add');
     Route::any('/media/index','MediaController@index');
-    Route::any('/media/picture','PictureController@index');
-    Route::any('/media/picture/upload','PictureController@upload');
-    Route::controller('/media/picture','PictureController');
+    //Route::any('/media/picture','PictureController@getIndex');
+    //Route::any('/media/picture/upload','PictureController@postUpload');
+    //Route::controller('/media/picture','PictureController');
 
     //客户信息管理 Custom/index
     Route::any('/custom/index','CustomController@index');
@@ -81,6 +81,9 @@ Route::group(array('before' => 'auth'), function()
 
     //物料管理
     Route::resource('material', 'MaterialController');
+
+    //设计管理 图库
+    Route::controller('picture','PictureController');
 
     CrudController::initRouter(array(
         Province::$admin_config,

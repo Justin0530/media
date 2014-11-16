@@ -60,6 +60,7 @@ Route::group(array('before' => 'auth'), function()
     Route::any('/equipment/maintain','EquipmentController@maintain');
     Route::any('/equipment/changeMaterial/{id}','EquipmentController@changeMaterial')->where('id', '[0-9]+');
     Route::any('/equipment/changeMaterialAjax/{id}','EquipmentController@changeMaterialAjax')->where('id', '[0-9]+');
+    Route::any('/equipment/deel/{id}','EquipmentController@deelWith');
 
     //物料管理
     Route::any('/material/index','MaterialController@index');

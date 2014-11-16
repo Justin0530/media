@@ -16,6 +16,7 @@ ClassLoader::addDirectories(array(
 	app_path().'/commands',
 	app_path().'/controllers',
 	app_path().'/models',
+    app_path().'/common',
 	app_path().'/database/seeds',
 
 ));
@@ -70,7 +71,6 @@ App::down(function()
 
 DB::listen(function($sql, $bindings, $time)
 {
-    echo $sql;exit();
     $sql = str_replace('?','%s',$sql);
     $sql = vsprintf($sql, $bindings);
     Log::info($sql.' time:'.$time);

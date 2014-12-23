@@ -20,7 +20,7 @@ class UserController extends BaseController {
         //var_dump(Request::getMethod());exit();
         //var_dump(Input::get('username'));
         //var_dump(Input::get('password'));
-        $password = Hash::make('secret');
+	$password = Hash::make('secret');
         if (Auth::check())
         {
             return Redirect::intended();

@@ -8,7 +8,7 @@
 
 <div id="content-header">
     <div id="breadcrumb"><a href="{{URL::to('/')}}" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> 控制面板</a>
-        <a href="/" class="tip-bottom">系统管理</a> <a href="{{URL::to('install/index')}}" class="current">点位管理</a></div>
+        <a href="{{URL::action('InstallController@index')}}" class="tip-bottom">点位管理</a> <a href="{{URL::to('install/index')}}" class="current">点位编辑</a></div>
 </div>
 <div class="container-fluid">
     @if(!isset($kindergarten))<?php $kindergarten = new Kindergarten()?>@endif
